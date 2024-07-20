@@ -6,8 +6,9 @@
 
 #include "ff.h"
 #include "ffconf.h"
+#include "ch.h"
 
-#include "fatfsWrapperConfig.h"
+#include "fatfsWrapperConfig_template.h"
 
 /*
  * Defines for which functions need to be included in the wrapper.
@@ -17,35 +18,35 @@
 #define HAS_READ        (FATFS_WRP_ENABLE_READ)
 #define HAS_CLOSE       (FATFS_WRP_ENABLE_CLOSE)
 
-#define HAS_WRITE       (FATFS_WRP_ENABLE_WRITE    && !_FS_READONLY)
-#define HAS_SYNC        (FATFS_WRP_ENABLE_SYNC     && !_FS_READONLY)
+#define HAS_WRITE       (FATFS_WRP_ENABLE_WRITE    && !FF_FS_READONLY)
+#define HAS_SYNC        (FATFS_WRP_ENABLE_SYNC     && !FF_FS_READONLY)
 
-#define HAS_CHDRIVE     (FATFS_WRP_ENABLE_CHDRIVE  && (_FS_RPATH >= 1))
-#define HAS_CHDIR       (FATFS_WRP_ENABLE_CHDIR    && (_FS_RPATH >= 1))
-#define HAS_GETCWD      (FATFS_WRP_ENABLE_GETCWD   && (_FS_RPATH >= 2))
-
-
-#define HAS_LSEEK       (FATFS_WRP_ENABLE_LSEEK    && (_FS_MINIMIZE <= 2))
-#define HAS_OPENDIR     (FATFS_WRP_ENABLE_OPENDIR  && (_FS_MINIMIZE <= 1))
-#define HAS_READDIR     (FATFS_WRP_ENABLE_READDIR  && (_FS_MINIMIZE <= 1))
-#define HAS_STAT        (FATFS_WRP_ENABLE_STAT     && (_FS_MINIMIZE == 0))
-#define HAS_GETFREE     (FATFS_WRP_ENABLE_GETFREE  && (_FS_MINIMIZE == 0) && !_FS_READONLY)
-#define HAS_TRUNCATE    (FATFS_WRP_ENABLE_TRUNKATE && (_FS_MINIMIZE == 0) && !_FS_READONLY)
-#define HAS_UNLINK      (FATFS_WRP_ENABLE_UNLINK   && (_FS_MINIMIZE == 0) && !_FS_READONLY)
-#define HAS_MKDIR       (FATFS_WRP_ENABLE_MKDIR    && (_FS_MINIMIZE == 0) && !_FS_READONLY)
-#define HAS_CHMOD       (FATFS_WRP_ENABLE_CHMOD    && (_FS_MINIMIZE == 0) && !_FS_READONLY)
-#define HAS_UTIME       (FATFS_WRP_ENABLE_UTIME    && (_FS_MINIMIZE == 0) && !_FS_READONLY)
-#define HAS_RENAME      (FATFS_WRP_ENABLE_RENAME   && (_FS_MINIMIZE == 0) && !_FS_READONLY)
+#define HAS_CHDRIVE     (FATFS_WRP_ENABLE_CHDRIVE  && (FF_FS_RPATH >= 1))
+#define HAS_CHDIR       (FATFS_WRP_ENABLE_CHDIR    && (FF_FS_RPATH >= 1))
+#define HAS_GETCWD      (FATFS_WRP_ENABLE_GETCWD   && (FF_FS_RPATH >= 2))
 
 
-#define HAS_FORWARD     (FATFS_WRP_ENABLE_FORWARD  && _USE_FORWARD && _FS_TINY)
-#define HAS_MKFS        (FATFS_WRP_ENABLE_MKFS     && _USE_MKFS && !_FS_READONLY)
-#define HAS_FDISK       (FATFS_WRP_ENABLE_FDISK    && _USE_MKFS && !_FS_READONLY && (_MULTI_PARTITION == 2))
+#define HAS_LSEEK       (FATFS_WRP_ENABLE_LSEEK    && (FF_FS_MINIMIZE <= 2))
+#define HAS_OPENDIR     (FATFS_WRP_ENABLE_OPENDIR  && (FF_FS_MINIMIZE <= 1))
+#define HAS_READDIR     (FATFS_WRP_ENABLE_READDIR  && (FF_FS_MINIMIZE <= 1))
+#define HAS_STAT        (FATFS_WRP_ENABLE_STAT     && (FF_FS_MINIMIZE == 0))
+#define HAS_GETFREE     (FATFS_WRP_ENABLE_GETFREE  && (FF_FS_MINIMIZE == 0) && !FF_FS_READONLY)
+#define HAS_TRUNCATE    (FATFS_WRP_ENABLE_TRUNKATE && (FF_FS_MINIMIZE == 0) && !FF_FS_READONLY)
+#define HAS_UNLINK      (FATFS_WRP_ENABLE_UNLINK   && (FF_FS_MINIMIZE == 0) && !FF_FS_READONLY)
+#define HAS_MKDIR       (FATFS_WRP_ENABLE_MKDIR    && (FF_FS_MINIMIZE == 0) && !FF_FS_READONLY)
+#define HAS_CHMOD       (FATFS_WRP_ENABLE_CHMOD    && (FF_FS_MINIMIZE == 0) && !FF_FS_READONLY)
+#define HAS_UTIME       (FATFS_WRP_ENABLE_UTIME    && (FF_FS_MINIMIZE == 0) && !FF_FS_READONLY)
+#define HAS_RENAME      (FATFS_WRP_ENABLE_RENAME   && (FF_FS_MINIMIZE == 0) && !FF_FS_READONLY)
 
-#define HAS_GETS        (FATFS_WRP_ENABLE_GETS     && _USE_STRFUNC)
-#define HAS_PUTC        (FATFS_WRP_ENABLE_PUTC     && _USE_STRFUNC && !_FS_READONLY)
-#define HAS_PUTS        (FATFS_WRP_ENABLE_PUTS     && _USE_STRFUNC && !_FS_READONLY)
-#define HAS_PRINTF      (FATFS_WRP_ENABLE_PRINTF   && _USE_STRFUNC && !_FS_READONLY)
+
+#define HAS_FORWARD     (FATFS_WRP_ENABLE_FORWARD  && FF_USE_FORWARD && FF_FS_TINY)
+#define HAS_MKFS        (FATFS_WRP_ENABLE_MKFS     && FF_USE_MKFS && !FF_FS_READONLY)
+#define HAS_FDISK       (FATFS_WRP_ENABLE_FDISK    && FF_USE_MKFS && !FF_FS_READONLY && (FF_MULTI_PARTITION == 2))
+
+#define HAS_GETS        (FATFS_WRP_ENABLE_GETS     && FF_USE_STRFUNC)
+#define HAS_PUTC        (FATFS_WRP_ENABLE_PUTC     && FF_USE_STRFUNC && !FF_FS_READONLY)
+#define HAS_PUTS        (FATFS_WRP_ENABLE_PUTS     && FF_USE_STRFUNC && !FF_FS_READONLY)
+#define HAS_PRINTF      (FATFS_WRP_ENABLE_PRINTF   && FF_USE_STRFUNC && !FF_FS_READONLY)
 
 /**
  * @brief Enumeration of all possible actions depending on activated functions.
