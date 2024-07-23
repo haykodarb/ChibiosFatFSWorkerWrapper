@@ -117,14 +117,14 @@
  * @brief Enable wrapped calls to f_chmod.
  */
 #if !defined(FATFS_WRP_ENABLE_CHMOD) || defined(__DOXYGEN__)
-#define FATFS_WRP_ENABLE_CHMOD                 1
+#define FATFS_WRP_ENABLE_CHMOD                 0
 #endif
 
 /**
  * @brief Enable wrapped calls to f_utime.
  */
 #if !defined(FATFS_WRP_ENABLE_UTIME) || defined(__DOXYGEN__)
-#define FATFS_WRP_ENABLE_UTIME                 1
+#define FATFS_WRP_ENABLE_UTIME                 0
 #endif
 
 /**
